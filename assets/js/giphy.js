@@ -1,92 +1,102 @@
 const animals = ['whale', 'shark', 'dog', 'cephalopod']
 
+//Change gif load to static
 
+//Funtion to add buttons
+function addButtons() {
 
-$('.animal-btn').on('click', function () {
-    // In this case, the 'this' keyword refers to the button that was clicked
-    let animal = $(this).attr('data-animal');
-    console.log(animal)
-    // Constructing a URL to search Giphy for the name of the person who said the quote
-    let queryURL = 'https://api.giphy.com/v1/gifs/search?q=' +
-        animal + '&api_key=mmgdoUW4uX0iFXnEO4XsrwJbO2lStDPC&limit=10';
-
-    // Performing our AJAX GET request
-    $.ajax({
-        url: queryURL,
-        method: 'GET'
-    })
-        // After the data comes back from the API
-        .then(function (response) {
-            let results = response.data;
-
-            // Looping over every result item
-            for (let i = 0; i < results.length; i++) {
-
-                // Only taking action if the photo has an appropriate rating
-                if (results[i].rating !== 'r' && results[i].rating !== 'pg-13') {
-                    // Creating a div with the class 'item'
-                    let gifDiv = $('<div class="item">');
-
-                    // Storing the result item's rating
-                    let rating = results[i].rating;
-
-                    // Creating a paragraph tag with the result item's rating
-                    let p = $('<p>').text('Rating: ' + rating);
-
-                    // Creating an image tag
-                    let animalImage = $('<img>');
-
-                    // Giving the image tag an src attribute of a proprty pulled off the
-                    // result item
-                    animalImage.attr('src', results[i].images.fixed_height.url);
-
-                    // Appending the paragraph and animalImage we created to the 'gifDiv' div we created
-                    gifDiv.append(p);
-                    gifDiv.append(animalImage);
-
-                    // Prepending the gifDiv to the '#gifs-appear-here' div in the HTML
-                    $('#display-animals').prepend(gifDiv);
-                }
-            }
-        });
-});
-
-// Function for displaying movie data
-function renderButtons() {
-
-    // Deleting the movies prior to adding new movies
-    // (this is necessary otherwise you will have repeat buttons)
+    //Prevent repeat
     $('#animalButtons').empty();
 
-    // Looping through the array of movies
+    //Loop through array
     for (let i = 0; i < animals.length; i++) {
+        //Add buttons from the array
 
-        // Then dynamicaly generating buttons for each movie in the array
-        // This code $('<button>') is all jQuery needs to create the beginning and end tag. (<button></button>)
         let addButton = $('<button>');
-        // Adding a class of movie-btn to our button
-        addButton.addClass('animal-btn');
-        // Adding a data-attribute
+        //Add classes to the button
+        addButton.addClass('animal-btn btn btn-info');
+        //Add data attribute
         addButton.attr('data-animal', animals[i]);
-        // Providing the initial button text
+        //Add text to button
         addButton.text(animals[i]);
-        // Adding the button to the buttons-view div
+        //Add the button to div with id animalButtons
         $('#animalButtons').append(addButton);
     }
+    callAndReturn()
 }
 
-// This function handles events where a movie button is clicked
+//Addomg on click event lsitner to buttons
 $('#addAnimal').on('click', function (event) {
     event.preventDefault();
-    // This line grabs the input from the textbox
     let animal = $('#animal-input').val().trim();
-
-    // Adding movie from the textbox to our array
     animals.push(animal);
-
-    // Calling renderButtons which handles the processing of our movie array
-    renderButtons();
+    //Call the first function
+    addButtons();
 });
 
-// Calling the renderButtons function to display the intial buttons
-renderButtons();
+//Call addbuttons function
+addButtons();
+
+console.log($('.animal-btn'))
+
+function callAndReturn() {
+    $('.animal-btn').on('click', function () {
+        let animal = $(this).attr('data-animal')
+
+        //Set search url to a variable
+        let queryURL = 'https://api.giphy.com/v1/gifs/search?q=' +
+            animal + '&api_key=mmgdoUW4uX0iFXnEO4XsrwJbO2lStDPC&limit=10';
+
+        $.ajax({
+            url: queryURL,
+            method: 'GET'
+        })
+            //Use the return data in a function
+            .then(function (outcome) {
+                let gifReturn = outcome.data
+
+                //Loop through array and do things
+                for (let i = 0; i < gifReturn.length; i++) {
+
+                    //Checking for certain ratings before using gif
+                    if (gifReturn[i].rating !== 'r' && gifReturn[i].rating !== 'pg-13') {
+                        //
+                        let gifDiv = $('<div class="item">')
+
+                        //Variable for rating
+                        let rating = gifReturn[i].rating
+
+                        //Add paragraph for rating
+                        let p = $('<p>').text('Rating: ' + rating)
+
+                        //Add image tag
+                        let animalImage = $('<img class="rounded">')
+
+                        let still = gifReturn[i].images.fixed_height_still.url
+                        let animated = gifReturn[i].images.fixed_height.url
+
+                        animalImage.attr('data-animated', animated)
+                        animalImage.attr('data-still', still)
+
+                        animalImage.attr('src', still)
+
+
+                        //Appending the image and description
+                        gifDiv.append(animalImage)
+                        gifDiv.append(p)
+
+                        //Add the gif to the div with id display-animals
+                        $('#display-animals').prepend(gifDiv)
+                    }
+                }
+            })
+    })
+}
+
+$('#addAnimal').on('click', function (event) {
+    event.preventDefault();
+    let animal = $('#animal-input').val().trim();
+    animals.push(animal);
+    //Call the first function
+    addButtons();
+});
