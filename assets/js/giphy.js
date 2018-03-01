@@ -92,11 +92,3 @@ function callAndReturn() {
             })
     })
 }
-
-$('#addAnimal').on('click', function (event) {
-    event.preventDefault();
-    let animal = $('#animal-input').val().trim();
-    animals.push(animal);
-    //Call the first function
-    addButtons();
-});
