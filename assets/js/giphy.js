@@ -25,7 +25,7 @@ function addButtons() {
     callAndReturn()
 }
 
-//Addomg on click event lsitner to buttons
+//Add on click event lsitner to buttons
 $('#addAnimal').on('click', function (event) {
     event.preventDefault();
     let animal = $('#animal-input').val().trim();
@@ -37,7 +37,6 @@ $('#addAnimal').on('click', function (event) {
 //Call addbuttons function
 addButtons();
 
-console.log($('.animal-btn'))
 
 function callAndReturn() {
     $('.animal-btn').on('click', function () {
@@ -90,5 +89,12 @@ function callAndReturn() {
                     }
                 }
             })
+    })
+    $('#display-animals').on('click', 'img', function () {
+        let animalStill = $(this).attr('src')
+        let animated = $(this).attr('data-animated')
+        console.log($(this).attr('src'));
+        $(this).attr('src', animated)
+        $(this).attr('data-animated', animalStill)
     })
 }
